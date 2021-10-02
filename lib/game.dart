@@ -8,7 +8,7 @@ List operate(List<int> row, int score, SharedPreferences? sharedPref) {
   row = slide(row);
 
   print('from func $sc');
-  return [sc, row] as List<int>;
+  return [sc, row] as List;
 }
 
 List<int> filter(List<int> row) {
@@ -55,7 +55,7 @@ List combine(List<int> row, int score, SharedPreferences? sharedPref) {
       row[i - 1] = 0;
     }
   }
-  return [score, row] as List<int>;
+  return [score, row] as List;
 }
 
 bool isGameWon(List<List<int>> grid) {
