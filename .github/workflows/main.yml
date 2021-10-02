@@ -1,6 +1,7 @@
 name: 2048-ci
 
 on:
+  pull_request:
   push:
     branches:
     - master
@@ -20,8 +21,6 @@ jobs:
         channel: 'stable' 
     
     - run: flutter pub get
-    
-    - run: flutter test
     
     - run: |
             echo "repo_token: ${{ secrets.COVERALLS_TOKEN }}" > .coveralls.yml
