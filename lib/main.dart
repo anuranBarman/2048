@@ -1,30 +1,30 @@
 import 'package:flutter/material.dart';
-import 'home.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sizer/sizer.dart';
+import 'package:two_zero_four_eight/cubit/game_cubit.dart';
+import 'package:two_zero_four_eight/home.dart';
+import 'package:two_zero_four_eight/screens/game_screen.dart';
 
-void main() => runApp(new MyApp());
+void main() => runApp(const App2048());
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+///Main App
+class App2048 extends StatelessWidget {
+  /// Constructor
+  const App2048({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return MaterialApp(
       title: '2048',
-      theme: new ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or press Run > Flutter Hot Reload in IntelliJ). Notice that the
-        // counter didn't reset back to zero; the application is not restarted.
-        primarySwatch: Colors.blue,
-        fontFamily: 'StarJedi'
-      ),
-      home: HomePage(),
+      theme: ThemeData(primarySwatch: Colors.blue, fontFamily: 'StarJedi'),
+      home: Sizer(builder: (context, orientation, deviceType) {
+        SizerUtil.orientation = orientation;
+        return BlocProvider(
+          create: (context) => GameCubit(currentGrid: []),
+          child: const GameScreen(),
+        );
+      }),
       debugShowCheckedModeBanner: false,
     );
   }
 }
-
-

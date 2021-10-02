@@ -1,6 +1,11 @@
+/// Point
 class Point {
-  int x;
-  int y;
+  /// Constructor
+  Point(this.x, this.y);
 
-  Point(this.x,this.y);
+  /// Point X
+  final int x;
+
+  /// Point Y
+  final int y;
 }

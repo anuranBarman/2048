@@ -61,7 +61,12 @@ class _HomePageState extends State<HomePage> {
             size = 20.0;
             break;
         }
-        grids.add(Tile(number, width, height, color, size));
+        grids.add(Tile(
+            number: number,
+            width: width,
+            height: height,
+            color: color,
+            fontSize: size));
       }
     }
     return grids;
@@ -103,7 +108,7 @@ class _HomePageState extends State<HomePage> {
 
     if (played) {
       print('playing');
-      List<List<int>> past = copyGrid(grid);
+      final past = copyGrid(grid);
       print('past $past');
       for (int i = 0; i < 4; i++) {
         setState(() {
