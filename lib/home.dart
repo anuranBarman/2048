@@ -9,7 +9,6 @@ import 'dart:async';
 class HomePage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return _HomePageState();
   }
 }
@@ -17,7 +16,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<List<int>> grid = [];
   List<List<int>> gridNew = [];
-  SharedPreferences sharedPreferences;
+  SharedPreferences? sharedPreferences;
   int score = 0;
   bool isgameOver = false;
   bool isgameWon = false;
@@ -34,22 +33,22 @@ class _HomePageState extends State<HomePage> {
           number = "";
         } else if (num == 2 || num == 4) {
           color = MyColor.gridColorTwoFour;
-          number = "${num}";
+          number = "$num";
         } else if (num == 8 || num == 64 || num == 256) {
           color = MyColor.gridColorEightSixtyFourTwoFiftySix;
-          number = "${num}";
+          number = "$num";
         } else if (num == 16 || num == 32 || num == 1024) {
           color = MyColor.gridColorSixteenThirtyTwoOneZeroTwoFour;
-          number = "${num}";
+          number = "$num";
         } else if (num == 128 || num == 512) {
           color = MyColor.gridColorOneTwentyEightFiveOneTwo;
-          number = "${num}";
+          number = "$num";
         } else {
           color = MyColor.gridColorWin;
-          number = "${num}";
+          number = "$num";
         }
-        double size;
-        String n = "${number}";
+        double? size;
+        String n = "$number";
         switch (n.length) {
           case 1:
           case 2:
@@ -105,20 +104,20 @@ class _HomePageState extends State<HomePage> {
     if (played) {
       print('playing');
       List<List<int>> past = copyGrid(grid);
-      print('past ${past}');
+      print('past $past');
       for (int i = 0; i < 4; i++) {
         setState(() {
           List result = operate(grid[i], score, sharedPreferences);
-          score = result[0];
-          print('score in set state ${score}');
-          grid[i] = result[1];
+          score = result[0] as int;
+          print('score in set state $score');
+          grid[i] = result[1] as List<int>;
         });
       }
       setState(() {
         grid = addNumber(grid, gridNew);
       });
       bool changed = compare(past, grid);
-      print('changed ${changed}');
+      print('changed $changed');
       if (flipped) {
         setState(() {
           grid = flipGrid(grid);
@@ -152,7 +151,7 @@ class _HomePageState extends State<HomePage> {
       if (gamewon) {
         print("GAME WON");
         setState(() {
-          isgameWon=true;          
+          isgameWon = true;
         });
       }
       print(grid);
@@ -162,7 +161,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     grid = blankGrid();
     gridNew = blankGrid();
     addNumber(grid, gridNew);
@@ -172,7 +170,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<String> getHighScore() async {
     sharedPreferences = await SharedPreferences.getInstance();
-    int score = sharedPreferences.getInt('high_score');
+    int? score = sharedPreferences!.getInt('high_score');
     if (score == null) {
       score = 0;
     }
@@ -181,7 +179,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     double width = MediaQuery.of(context).size.width;
     double gridWidth = (width - 80) / 4;
     double gridHeight = gridWidth;
@@ -198,187 +195,187 @@ class _HomePageState extends State<HomePage> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-        padding: EdgeInsets.all(20.0),
-        child: Column(
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.all(10.0),
-              child: Container(
-                width: 200.0,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20.0),
-                  color: Color(MyColor.gridBackground),
+          padding: EdgeInsets.all(20.0),
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.all(10.0),
+                child: Container(
+                  width: 200.0,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20.0),
+                    color: Color(MyColor.gridBackground),
+                  ),
+                  height: 82.0,
+                  child: Column(
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.only(top: 10.0, bottom: 2.0),
+                        child: Text(
+                          'Score',
+                          style: TextStyle(
+                              fontSize: 15.0,
+                              color: Colors.white70,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 10.0),
+                        child: Text(
+                          '$score',
+                          style: TextStyle(
+                              fontSize: 20.0,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
-                height: 82.0,
-                child: Column(
+              ),
+              Container(
+                height: height,
+                child: Stack(
                   children: <Widget>[
                     Padding(
-                      padding: EdgeInsets.only(top: 10.0, bottom: 2.0),
-                      child: Text(
-                        'Score',
-                        style: TextStyle(
-                            fontSize: 15.0,
-                            color: Colors.white70,
-                            fontWeight: FontWeight.bold),
+                      padding: EdgeInsets.all(10.0),
+                      child: GestureDetector(
+                        child: GridView.count(
+                          primary: false,
+                          crossAxisSpacing: 10.0,
+                          mainAxisSpacing: 10.0,
+                          crossAxisCount: 4,
+                          children: getGrid(gridWidth, gridHeight),
+                        ),
+                        onVerticalDragEnd: (DragEndDetails details) {
+                          //primaryVelocity -ve up +ve down
+                          if (details.primaryVelocity! < 0) {
+                            handleGesture(0);
+                          } else if (details.primaryVelocity! > 0) {
+                            handleGesture(1);
+                          }
+                        },
+                        onHorizontalDragEnd: (details) {
+                          //-ve right, +ve left
+                          if (details.primaryVelocity! > 0) {
+                            handleGesture(2);
+                          } else if (details.primaryVelocity! < 0) {
+                            handleGesture(3);
+                          }
+                        },
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsets.only(bottom: 10.0),
-                      child: Text(
-                        '${score}',
-                        style: TextStyle(
-                            fontSize: 20.0,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold),
+                    isgameOver
+                        ? Container(
+                            height: height,
+                            color: Color(MyColor.transparentWhite),
+                            child: Center(
+                              child: Text(
+                                'Game over!',
+                                style: TextStyle(
+                                    fontSize: 30.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(MyColor.gridBackground)),
+                              ),
+                            ),
+                          )
+                        : SizedBox(),
+                    isgameWon
+                        ? Container(
+                            height: height,
+                            color: Color(MyColor.transparentWhite),
+                            child: Center(
+                              child: Text(
+                                'You Won!',
+                                style: TextStyle(
+                                    fontSize: 30.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(MyColor.gridBackground)),
+                              ),
+                            ),
+                          )
+                        : SizedBox(),
+                  ],
+                ),
+                color: Color(MyColor.gridBackground),
+              ),
+              Padding(
+                padding: EdgeInsets.all(10.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20.0),
+                        color: Color(MyColor.gridBackground),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: IconButton(
+                          iconSize: 35.0,
+                          icon: Icon(
+                            Icons.refresh,
+                            color: Colors.white70,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              grid = blankGrid();
+                              gridNew = blankGrid();
+                              grid = addNumber(grid, gridNew);
+                              grid = addNumber(grid, gridNew);
+                              score = 0;
+                              isgameOver = false;
+                              isgameWon = false;
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20.0),
+                        color: Color(MyColor.gridBackground),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Column(
+                          children: <Widget>[
+                            Text(
+                              'High Score',
+                              style: TextStyle(
+                                  color: Colors.white70,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            FutureBuilder<String>(
+                              future: getHighScore(),
+                              builder: (ctx, snapshot) {
+                                if (snapshot.hasData) {
+                                  return Text(
+                                    snapshot.data!,
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold),
+                                  );
+                                } else {
+                                  return Text(
+                                    '0',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold),
+                                  );
+                                }
+                              },
+                            )
+                          ],
+                        ),
                       ),
                     )
                   ],
                 ),
-              ),
-            ),
-            Container(
-              height: height,
-              child: Stack(
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.all(10.0),
-                    child: GestureDetector(
-                      child: GridView.count(
-                        primary: false,
-                        crossAxisSpacing: 10.0,
-                        mainAxisSpacing: 10.0,
-                        crossAxisCount: 4,
-                        children: getGrid(gridWidth, gridHeight),
-                      ),
-                      onVerticalDragEnd: (DragEndDetails details) {
-                        //primaryVelocity -ve up +ve down
-                        if (details.primaryVelocity < 0) {
-                          handleGesture(0);
-                        } else if (details.primaryVelocity > 0) {
-                          handleGesture(1);
-                        }
-                      },
-                      onHorizontalDragEnd: (details) {
-                        //-ve right, +ve left
-                        if (details.primaryVelocity > 0) {
-                          handleGesture(2);
-                        } else if (details.primaryVelocity < 0) {
-                          handleGesture(3);
-                        }
-                      },
-                    ),
-                  ),
-                  isgameOver
-                      ? Container(
-                          height: height,
-                          color: Color(MyColor.transparentWhite),
-                          child: Center(
-                            child: Text(
-                              'Game over!',
-                              style: TextStyle(
-                                  fontSize: 30.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(MyColor.gridBackground)),
-                            ),
-                          ),
-                        )
-                      : SizedBox(),
-                  isgameWon
-                      ? Container(
-                          height: height,
-                          color: Color(MyColor.transparentWhite),
-                          child: Center(
-                            child: Text(
-                              'You Won!',
-                              style: TextStyle(
-                                  fontSize: 30.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(MyColor.gridBackground)),
-                            ),
-                          ),
-                        )
-                      : SizedBox(),    
-                ],
-              ),
-              color: Color(MyColor.gridBackground),
-            ),
-            Padding(
-              padding: EdgeInsets.all(10.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20.0),
-                      color: Color(MyColor.gridBackground),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.all(10.0),
-                      child: IconButton(
-                        iconSize: 35.0,
-                        icon: Icon(
-                          Icons.refresh,
-                          color: Colors.white70,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            grid = blankGrid();
-                            gridNew = blankGrid();
-                            grid = addNumber(grid, gridNew);
-                            grid = addNumber(grid, gridNew);
-                            score = 0;
-                            isgameOver=false;
-                            isgameWon=false;
-                          });
-                        },
-                      ),
-                    ),
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20.0),
-                      color: Color(MyColor.gridBackground),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.all(10.0),
-                      child: Column(
-                        children: <Widget>[
-                          Text(
-                            'High Score',
-                            style: TextStyle(
-                                color: Colors.white70,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          FutureBuilder<String>(
-                            future: getHighScore(),
-                            builder: (ctx, snapshot) {
-                              if (snapshot.hasData) {
-                                return Text(
-                                  snapshot.data,
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold),
-                                );
-                              } else {
-                                return Text(
-                                  '0',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold),
-                                );
-                              }
-                            },
-                          )
-                        ],
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
-      ),
       ),
     );
   }

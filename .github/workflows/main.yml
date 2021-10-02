@@ -1,0 +1,42 @@
+name: 2048-ci
+
+on:
+  push:
+    branches:
+    - master
+ 
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    
+    - uses: actions/checkout@v2
+    - uses: actions/setup-java@v1
+      with:
+        java-version: '12.x'
+    
+    - uses: subosito/flutter-action@v1
+      with:
+        channel: 'stable' 
+    
+    - run: flutter pub get
+    
+    - run: flutter test
+    
+    - run: |
+            echo "repo_token: ${{ secrets.COVERALLS_TOKEN }}" > .coveralls.yml
+            
+            
+    - run: sudo gem install coveralls-lcov
+
+    - run: flutter test --coverage
+    
+    - run: coveralls-lcov coverage/lcov.info
+    
+    - uses: VeryGoodOpenSource/very_good_coverage@v1.2.0
+      with:
+        path: 'coverage/lcov.info'
+        min_coverage: 0
+        exclude: '**/*_observer.dart **/change.dart'
+    
+    - run: flutter build apk --no-tree-shake-icons
