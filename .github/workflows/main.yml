@@ -21,8 +21,6 @@ jobs:
     
     - run: flutter pub get
     
-    - run: flutter test
-    
     - run: |
             echo "repo_token: ${{ secrets.COVERALLS_TOKEN }}" > .coveralls.yml
             
