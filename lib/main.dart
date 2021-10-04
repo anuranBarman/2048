@@ -21,6 +21,7 @@ class App2048 extends StatelessWidget {
         SizerUtil.orientation = orientation;
         return BlocProvider(
           create: (context) => GameCubit(currentGrid: []),
+          //child: HomePage(),
           child: const GameScreen(),
         );
       }),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'mycolor.dart';
-import 'tile.dart';
+import 'model/tile.dart';
 import 'grid.dart';
 import 'game.dart';
 import 'package:shared_preferences/shared_preferences.dart';
