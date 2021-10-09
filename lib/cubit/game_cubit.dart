@@ -84,10 +84,12 @@ class GameCubit extends Cubit<GameState> {
   // }
 
   void _flipGrid() {
-    for (var i = 0; i < matrixSize; i++) {
-      final _row = _currentGrid[i];
-      _currentGrid[i] = _row.reversed.toList();
-    }
+    _currentGrid = _currentGrid.map((row) => row.reversed.toList()).toList();
+    print(_currentGrid);
+    // for (var i = 0; i < matrixSize; i++) {
+    //   final _row = _currentGrid[i];
+    //   _currentGrid[i] = _row.reversed.toList();
+    // }
   }
 
   void _transposeGrid(List<List<IndividualCell>> grid) {
@@ -115,18 +117,20 @@ class GameCubit extends Cubit<GameState> {
         .toList();
     _generateGrid();
     _generateNewNumber();
-    emit(state.copyWith(currentGrid: _currentGrid));
   }
 
   ///on left swipe
   void onLeft() {
     _gameAlgorithm();
+    _emitCurrentGrid();
   }
 
   ///on right swipe
   void onRight() {
     _flipGrid();
     _gameAlgorithm();
+    _flipGrid();
+    _emitCurrentGrid();
   }
 
   ///on up swipe
@@ -291,6 +295,10 @@ class GameCubit extends Cubit<GameState> {
     _currentGrid[_cellData.x][_cellData.y].value = r > decider ? 4 : 2;
     _currentGrid[_cellData.x][_cellData.y].tileColor =
         Color(ColorConstants.gridColorTwoFour);
+  }
+
+  void _emitCurrentGrid() {
+    emit(state.copyWith(currentGrid: _currentGrid));
   }
 }
 
