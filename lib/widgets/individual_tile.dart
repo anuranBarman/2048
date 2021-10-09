@@ -24,7 +24,7 @@ class IndividualTile extends StatelessWidget {
       borderRadius: BorderRadius.circular(4.0.w),
       child: Container(
         margin: EdgeInsets.all(0.5.w),
-        color: cell.color,
+        color: cell.tileColor,
         child: Center(
           child: Text(
             _value,

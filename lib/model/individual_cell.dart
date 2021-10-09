@@ -4,11 +4,12 @@ import 'package:flutter/material.dart';
 class IndividualCell {
   /// a
   IndividualCell(
-      {required this.x,
-      required this.y,
+      {this.x = 0,
+      this.y = 0,
       this.value = 0,
-      required this.fontSize,
-      required this.color});
+      this.fontSize = 15,
+      this.tileColor = Colors.black,
+      this.fontColor = Colors.white});
 
   /// x
   final int x;
@@ -23,5 +24,8 @@ class IndividualCell {
   double fontSize;
 
   /// Tile Background Color
-  Color color;
+  Color tileColor;
+
+  /// Tile Font Color
+  Color fontColor;
 }

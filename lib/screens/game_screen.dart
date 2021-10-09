@@ -42,11 +42,12 @@ class _GameScreenState extends State<GameScreen> {
             child: Center(
                 child: Container(
               width: 100.0.w,
-              height: 69.0.h,
+              height: 91.0.w,
               color: Color(ColorConstants.gridBackground),
               margin: EdgeInsets.all(4.0.w),
               padding: EdgeInsets.all(2.0.w),
               child: GridView.count(
+                physics: const NeverScrollableScrollPhysics(),
                 primary: false,
                 crossAxisSpacing: 0.5.w,
                 mainAxisSpacing: 0.5.w,
@@ -59,9 +60,9 @@ class _GameScreenState extends State<GameScreen> {
             )),
             onHorizontalDragEnd: (draggedDetails) {
               if (draggedDetails.primaryVelocity! > 0) {
-                context.read<GameCubit>().onRight();
-              } else if (draggedDetails.primaryVelocity! < 0) {
                 context.read<GameCubit>().onLeft();
+              } else if (draggedDetails.primaryVelocity! < 0) {
+                context.read<GameCubit>().onRight();
               }
             },
             onVerticalDragEnd: (draggedDetails) {
