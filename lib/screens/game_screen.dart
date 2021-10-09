@@ -67,9 +67,9 @@ class _GameScreenState extends State<GameScreen> {
             },
             onVerticalDragEnd: (draggedDetails) {
               if (draggedDetails.primaryVelocity! > 0) {
-                context.read<GameCubit>().onUp();
-              } else if (draggedDetails.primaryVelocity! < 0) {
                 context.read<GameCubit>().onDown();
+              } else if (draggedDetails.primaryVelocity! < 0) {
+                context.read<GameCubit>().onUp();
               }
             },
           );

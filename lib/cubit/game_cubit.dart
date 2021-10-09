@@ -85,7 +85,7 @@ class GameCubit extends Cubit<GameState> {
 
   void _flipGrid() {
     _currentGrid = _currentGrid.map((row) => row.reversed.toList()).toList();
-    print(_currentGrid);
+    //print(_currentGrid);
     // for (var i = 0; i < matrixSize; i++) {
     //   final _row = _currentGrid[i];
     //   _currentGrid[i] = _row.reversed.toList();
@@ -94,7 +94,7 @@ class GameCubit extends Cubit<GameState> {
 
   void _transposeGrid(List<List<IndividualCell>> grid) {
     //New empty grid in _currentGrid
-    _generateGrid();
+    _generateGrid(isHardRefresh: true);
     for (var i = 0; i < matrixSize; i++) {
       for (var j = 0; j < matrixSize; j++) {
         _currentGrid[i][j] = grid[j][i];
@@ -177,20 +177,34 @@ class GameCubit extends Cubit<GameState> {
     _generateRandomValue();
   }
 
-  void _generateGrid() => _currentGrid = List.generate(
-      matrixSize,
-      (i) => List.generate(
+  void _generateGrid({bool isHardRefresh = false}) =>
+      _currentGrid = List.generate(
           matrixSize,
-          (j) => IndividualCell(
-              x: i,
-              y: j,
-              value: _currentGrid.length > 1 ? _currentGrid[i][j].value : 0,
-              tileColor: _getCellColor(
-                  _currentGrid.length > 1 ? _currentGrid[i][j].value : 0),
-              fontSize: _getFontSize(
-                  _currentGrid.length > 1 ? _currentGrid[i][j].value : 0),
-              fontColor: _getFontColor(
-                  _currentGrid.length > 1 ? _currentGrid[i][j].value : 0))));
+          (i) => List.generate(
+              matrixSize,
+              (j) => IndividualCell(
+                  x: i,
+                  y: j,
+                  value: isHardRefresh
+                      ? 0
+                      : _currentGrid.length > 1
+                          ? _currentGrid[i][j].value
+                          : 0,
+                  tileColor: _getCellColor(isHardRefresh
+                      ? 0
+                      : _currentGrid.length > 1
+                          ? _currentGrid[i][j].value
+                          : 0),
+                  fontSize: _getFontSize(isHardRefresh
+                      ? 0
+                      : _currentGrid.length > 1
+                          ? _currentGrid[i][j].value
+                          : 0),
+                  fontColor: _getFontColor(isHardRefresh
+                      ? 0
+                      : _currentGrid.length > 1
+                          ? _currentGrid[i][j].value
+                          : 0))));
 
   double _getFontSize(int cellData) {
     var _fontSize = 13.0.sp;
