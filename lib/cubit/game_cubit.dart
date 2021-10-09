@@ -5,6 +5,8 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
+import 'package:two_zero_four_eight/di/locator.dart';
+import 'package:two_zero_four_eight/helpers/shared_preferences.dart';
 
 import 'package:two_zero_four_eight/model/individual_cell.dart';
 import 'package:two_zero_four_eight/themes/color.dart';
@@ -18,12 +20,19 @@ const maxValue = 100;
 /// Value Decideder
 const decider = 50;
 
+/// Stored string for Highscore
+const highScore = 'high_score';
+
+/// Stored string for Current score
+const currentScore = 'current_score';
+
 ///Cubit
 class GameState extends Equatable {
   ///Constructor
   const GameState(
       {required this.currentGrid,
-      this.score = 0,
+      this.currentScore = 0,
+      this.highScore = 0,
       this.isGameOver = false,
       this.isGameWon = false});
 
@@ -31,7 +40,10 @@ class GameState extends Equatable {
   final List<List<IndividualCell>> currentGrid;
 
   ///Total points
-  final int score;
+  final int currentScore;
+
+  ///Total points
+  final int highScore;
 
   ///IsGame won
   final bool isGameWon;
@@ -39,18 +51,20 @@ class GameState extends Equatable {
   ///IsGame over
   final bool isGameOver;
   @override
-  List<Object?> get props => [currentGrid, score, isGameWon, isGameOver];
+  List<Object?> get props => [currentGrid, currentScore, isGameWon, isGameOver];
 
   ///Update new values
   GameState copyWith({
     List<List<IndividualCell>>? currentGrid,
-    int? score,
+    int? currentScore,
+    int? highScore,
     bool? isGameOver,
     bool? isGameWon,
   }) {
     return GameState(
       currentGrid: currentGrid ?? this.currentGrid,
-      score: score ?? this.score,
+      currentScore: currentScore ?? this.currentScore,
+      highScore: highScore ?? this.highScore,
       isGameWon: isGameWon ?? this.isGameWon,
       isGameOver: isGameOver ?? this.isGameOver,
     );
@@ -110,16 +124,11 @@ class GameCubit extends Cubit<GameState> {
         .map(_slide)
         .toList()
         .map(_reduce)
+        .toList()
+        .map(_filter)
+        .toList()
+        .map(_slide)
         .toList();
-    for (final row in _currentGrid) {
-      for (final column in row) {
-        if (column.value == 2048) {
-          emit(state.copyWith(isGameWon: true));
-          return;
-        }
-      }
-    }
-    _currentGrid = _currentGrid.map(_filter).toList().map(_slide).toList();
     _generateGrid();
     _generateNewNumber();
   }
@@ -128,6 +137,7 @@ class GameCubit extends Cubit<GameState> {
   void onLeft() {
     _gameAlgorithm();
     _emitCurrentGrid();
+    _emitScores();
   }
 
   ///on right swipe
@@ -136,6 +146,7 @@ class GameCubit extends Cubit<GameState> {
     _gameAlgorithm();
     _flipGrid();
     _emitCurrentGrid();
+    _emitScores();
   }
 
   ///on up swipe
@@ -146,6 +157,7 @@ class GameCubit extends Cubit<GameState> {
     _flipGrid();
     _transposeGrid(_currentGrid);
     _emitCurrentGrid();
+    _emitScores();
   }
 
   ///on down swipe
@@ -154,6 +166,7 @@ class GameCubit extends Cubit<GameState> {
     _gameAlgorithm();
     _transposeGrid(_currentGrid);
     _emitCurrentGrid();
+    _emitScores();
   }
 
   ///Initialize Grid
@@ -162,7 +175,7 @@ class GameCubit extends Cubit<GameState> {
     emit(state.copyWith(currentGrid: _currentGrid));
   }
 
-  void _initialize() {
+  Future<void> _initialize() async {
     _generateGrid();
     _generateNewNumber();
     _generateNewNumber();
@@ -209,22 +222,22 @@ class GameCubit extends Cubit<GameState> {
                           : 0))));
 
   double _getFontSize(int cellData) {
-    var _fontSize = 13.0.sp;
+    var _fontSize = 25.0.sp;
 
     switch (cellData) {
       case 16:
       case 32:
       case 64:
-        _fontSize = 16.0.sp;
+        _fontSize = 23.0.sp;
         break;
       case 128:
       case 256:
       case 512:
-        _fontSize = 18.0.sp;
+        _fontSize = 19.0.sp;
         break;
       case 1024:
       case 2048:
-        _fontSize = 20.0.sp;
+        _fontSize = 16.0.sp;
         break;
       case 2:
       case 4:
@@ -316,6 +329,13 @@ class GameCubit extends Cubit<GameState> {
   void _emitCurrentGrid() {
     emit(state.copyWith(currentGrid: _currentGrid));
   }
+
+  void _emitScores() {
+    final _pref = locator.get<SharedPreference>();
+    final _highScore = _pref.sharedPreferences.getInt(highScore);
+    final _currentScore = _pref.sharedPreferences.getInt(currentScore);
+    emit(state.copyWith(highScore: _highScore, currentScore: _currentScore));
+  }
 }
 
 /// Flatten a list
@@ -330,13 +350,41 @@ List<IndividualCell> _slide(List<IndividualCell> row) =>
     row;
 
 List<IndividualCell> _reduce(List<IndividualCell> row) {
-  for (var i = 3; i >= 1; i--) {
+  for (var i = matrixSize; i > 1; i--) {
     final _value = row[i].value;
     final _element = row[i - 1].value;
     if (_value == _element) {
       row[i].value = _value + _element;
       row[i - 1].value = 0;
+      _storeScores(row[i].value);
     }
   }
   return row;
+}
+
+Future<void> _storeScores(final int value) async {
+  final _pref = locator.get<SharedPreference>();
+  await _setCurrentScore(score: value, pref: _pref);
+  await _setHighScore(score: value, pref: _pref);
+}
+
+int _getHighScore(final SharedPreference pref) {
+  return pref.sharedPreferences.getInt(highScore) ?? 0;
+}
+
+// int _getCurrentScore(final SharedPreference pref) {
+//   return pref.sharedPreferences.getInt(currentScore) ?? 0;
+// }
+
+Future<void> _setHighScore(
+    {required final int score, required final SharedPreference pref}) async {
+  final _existingHighScore = _getHighScore(pref);
+  if (score > _existingHighScore) {
+    await pref.sharedPreferences.setInt(highScore, score);
+  }
+}
+
+Future<void> _setCurrentScore(
+    {required final int score, required final SharedPreference pref}) async {
+  await pref.sharedPreferences.setInt(currentScore, score);
 }
