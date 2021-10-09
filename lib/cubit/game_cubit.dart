@@ -110,11 +110,16 @@ class GameCubit extends Cubit<GameState> {
         .map(_slide)
         .toList()
         .map(_reduce)
-        .toList()
-        .map(_filter)
-        .toList()
-        .map(_slide)
         .toList();
+    for (final row in _currentGrid) {
+      for (final column in row) {
+        if (column.value == 2048) {
+          emit(state.copyWith(isGameWon: true));
+          return;
+        }
+      }
+    }
+    _currentGrid = _currentGrid.map(_filter).toList().map(_slide).toList();
     _generateGrid();
     _generateNewNumber();
   }
@@ -140,23 +145,16 @@ class GameCubit extends Cubit<GameState> {
     _gameAlgorithm();
     _flipGrid();
     _transposeGrid(_currentGrid);
-    emit(state.copyWith(currentGrid: _currentGrid));
+    _emitCurrentGrid();
   }
 
   ///on down swipe
   void onDown() {
     _transposeGrid(state.currentGrid);
     _gameAlgorithm();
+    _transposeGrid(_currentGrid);
+    _emitCurrentGrid();
   }
-
-  ///is Game won
-  void isGameWon() {}
-
-  ///is Game over
-  void isGameOver() {}
-
-  ///reset Gride
-  void resetGrid() {}
 
   ///Initialize Grid
   void initializeGrid() {
@@ -172,6 +170,10 @@ class GameCubit extends Cubit<GameState> {
 
   void _generateNewNumber() {
     _flattenList();
+    if (_flatList.isEmpty) {
+      emit(state.copyWith(isGameOver: true));
+      return;
+    }
     _pickRandomIndex();
     _generateCellData();
     _generateRandomValue();
@@ -329,10 +331,10 @@ List<IndividualCell> _slide(List<IndividualCell> row) =>
 
 List<IndividualCell> _reduce(List<IndividualCell> row) {
   for (var i = 3; i >= 1; i--) {
-    final a = row[i].value;
-    final b = row[i - 1].value;
-    if (a == b) {
-      row[i].value = a + b;
+    final _value = row[i].value;
+    final _element = row[i - 1].value;
+    if (_value == _element) {
+      row[i].value = _value + _element;
       row[i - 1].value = 0;
     }
   }
