@@ -194,7 +194,7 @@ class _GameScreenState extends State<GameScreen> {
           ),
           SizedBox(
               height: 10.0.w,
-              width: 15.0.w,
+              width: 30.0.w,
               child: ElevatedButton(
                 style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all<Color>(
