@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
 import 'package:two_zero_four_eight/cubit/game_cubit.dart';
 import 'package:two_zero_four_eight/di/locator.dart';
-import 'package:two_zero_four_eight/home.dart';
 import 'package:two_zero_four_eight/screens/game_screen.dart';
 
 Future<void> main() async {
@@ -26,7 +25,6 @@ class App2048 extends StatelessWidget {
         SizerUtil.orientation = orientation;
         return BlocProvider(
           create: (context) => GameCubit(currentGrid: []),
-          //child: HomePage(),
           child: const GameScreen(),
         );
       }),
