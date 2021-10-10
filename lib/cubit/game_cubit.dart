@@ -172,13 +172,14 @@ class GameCubit extends Cubit<GameState> {
   ///Initialize Grid
   void initializeGrid() {
     _initialize();
-    emit(state.copyWith(currentGrid: _currentGrid));
+    //emit(state.copyWith(currentGrid: _currentGrid));
   }
 
   Future<void> _initialize() async {
-    _generateGrid();
+    _generateGrid(isHardRefresh: true);
     _generateNewNumber();
     _generateNewNumber();
+    await _clearCurrentScore();
   }
 
   void _generateNewNumber() {
@@ -350,11 +351,29 @@ class GameCubit extends Cubit<GameState> {
     emit(state.copyWith(currentGrid: _currentGrid));
   }
 
-  void _emitScores() {
+  Future<void> _emitScores() async {
+    await Future<void>.delayed(const Duration(milliseconds: 400));
     final _pref = locator.get<SharedPreference>();
     final _highScore = _pref.sharedPreferences.getInt(highScore);
     final _currentScore = _pref.sharedPreferences.getInt(currentScore);
     emit(state.copyWith(highScore: _highScore, currentScore: _currentScore));
+  }
+
+  Future<void> _clearCurrentScore() async {
+    final _pref = locator.get<SharedPreference>();
+    await _pref.sharedPreferences.setInt(currentScore, 0);
+    final _highScore = _pref.sharedPreferences.getInt(highScore);
+    emit(state.copyWith(
+        currentGrid: _currentGrid,
+        currentScore: 0,
+        isGameOver: false,
+        isGameWon: false,
+        highScore: _highScore));
+  }
+
+  /// Reset all state values
+  Future<void> onReset() async {
+    await _initialize();
   }
 }
 
@@ -385,16 +404,17 @@ List<IndividualCell> _reduce(List<IndividualCell> row) {
 Future<void> _storeScores(final int value) async {
   final _pref = locator.get<SharedPreference>();
   await _setCurrentScore(score: value, pref: _pref);
-  await _setHighScore(score: value, pref: _pref);
+  final _score = _getCurrentScore(_pref);
+  await _setHighScore(score: _score, pref: _pref);
 }
 
 int _getHighScore(final SharedPreference pref) {
   return pref.sharedPreferences.getInt(highScore) ?? 0;
 }
 
-// int _getCurrentScore(final SharedPreference pref) {
-//   return pref.sharedPreferences.getInt(currentScore) ?? 0;
-// }
+int _getCurrentScore(final SharedPreference pref) {
+  return pref.sharedPreferences.getInt(currentScore) ?? 0;
+}
 
 Future<void> _setHighScore(
     {required final int score, required final SharedPreference pref}) async {
@@ -406,5 +426,7 @@ Future<void> _setHighScore(
 
 Future<void> _setCurrentScore(
     {required final int score, required final SharedPreference pref}) async {
-  await pref.sharedPreferences.setInt(currentScore, score);
+  var _score = _getCurrentScore(pref);
+  _score = _score + score;
+  await pref.sharedPreferences.setInt(currentScore, _score);
 }
