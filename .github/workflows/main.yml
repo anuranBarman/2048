@@ -34,10 +34,10 @@ jobs:
     
     - run: coveralls-lcov coverage/lcov.info
     
-    # - uses: VeryGoodOpenSource/very_good_coverage@v1.2.0
-    #   with:
-    #     path: 'coverage/lcov.info'
-    #     min_coverage: 60
-    #     exclude: '**/*_observer.dart **/change.dart'
+    - uses: VeryGoodOpenSource/very_good_coverage@v1.2.0
+      with:
+        path: 'coverage/lcov.info'
+        min_coverage: 60
+        exclude: '**/*_observer.dart **/change.dart'
     
     - run: flutter build apk --no-tree-shake-icons
