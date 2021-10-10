@@ -184,12 +184,32 @@ class GameCubit extends Cubit<GameState> {
   void _generateNewNumber() {
     _flattenList();
     if (_flatList.isEmpty) {
-      emit(state.copyWith(isGameOver: true));
+      _isGameWon();
       return;
+    } else {
+      _pickRandomIndex();
+      _generateCellData();
+      _generateRandomValue();
     }
-    _pickRandomIndex();
-    _generateCellData();
-    _generateRandomValue();
+  }
+
+  void _isGameWon() {
+    for (var i = 0; i < 4; i++) {
+      for (var j = 0; j < 4; j++) {
+        if (_currentGrid[i][j].value == 0) {
+          return;
+        }
+        if (i != 3 &&
+            _currentGrid[i][j].value == _currentGrid[i + 1][j].value) {
+          return;
+        }
+        if (j != 3 &&
+            _currentGrid[i][j].value == _currentGrid[i][j + 1].value) {
+          return;
+        }
+      }
+    }
+    emit(state.copyWith(isGameOver: true));
   }
 
   void _generateGrid({bool isHardRefresh = false}) =>
@@ -350,7 +370,7 @@ List<IndividualCell> _slide(List<IndividualCell> row) =>
     row;
 
 List<IndividualCell> _reduce(List<IndividualCell> row) {
-  for (var i = matrixSize; i > 1; i--) {
+  for (var i = matrixSize - 1; i >= 1; i--) {
     final _value = row[i].value;
     final _element = row[i - 1].value;
     if (_value == _element) {
