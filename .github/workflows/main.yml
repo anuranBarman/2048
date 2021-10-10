@@ -22,22 +22,22 @@ jobs:
     
     - run: flutter pub get
     
-    # - run: flutter test
+    - run: flutter test
     
     - run: |
             echo "repo_token: ${{ secrets.COVERALLS_TOKEN }}" > .coveralls.yml
             
             
-    # - run: sudo gem install coveralls-lcov
+    - run: sudo gem install coveralls-lcov
 
-    # - run: flutter test --coverage
+    - run: flutter test --coverage
     
-    # - run: coveralls-lcov coverage/lcov.info
+    - run: coveralls-lcov coverage/lcov.info
     
     # - uses: VeryGoodOpenSource/very_good_coverage@v1.2.0
     #   with:
     #     path: 'coverage/lcov.info'
-    #     min_coverage: 0
+    #     min_coverage: 60
     #     exclude: '**/*_observer.dart **/change.dart'
     
     - run: flutter build apk --no-tree-shake-icons
