@@ -141,7 +141,7 @@ class _GameScreenState extends State<GameScreen> {
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: Colors.amber,
-                              fontSize: 30.0.sp,
+                              fontSize: 25.0.sp,
                             ),
                           ),
                         ),
@@ -167,7 +167,7 @@ class _GameScreenState extends State<GameScreen> {
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: Colors.red,
-                              fontSize: 30.0.sp,
+                              fontSize: 25.0.sp,
                             ),
                           ),
                         ),
@@ -194,7 +194,7 @@ class _GameScreenState extends State<GameScreen> {
           ),
           SizedBox(
               height: 10.0.w,
-              width: 30.0.w,
+              width: 140,
               child: ElevatedButton(
                 style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all<Color>(

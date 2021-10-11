@@ -185,16 +185,17 @@ class GameCubit extends Cubit<GameState> {
   void _generateNewNumber() {
     _flattenList();
     if (_flatList.isEmpty) {
-      _isGameWon();
+      _isGameOver();
       return;
     } else {
       _pickRandomIndex();
       _generateCellData();
       _generateRandomValue();
     }
+    _isGameWon();
   }
 
-  void _isGameWon() {
+  void _isGameOver() {
     for (var i = 0; i < 4; i++) {
       for (var j = 0; j < 4; j++) {
         if (_currentGrid[i][j].value == 0) {
@@ -211,6 +212,16 @@ class GameCubit extends Cubit<GameState> {
       }
     }
     emit(state.copyWith(isGameOver: true));
+  }
+
+  void _isGameWon() {
+    for (var i = 0; i < 4; i++) {
+      for (var j = 0; j < 4; j++) {
+        if (_currentGrid[i][j].value == 2048) {
+          emit(state.copyWith(isGameWon: true));
+        }
+      }
+    }
   }
 
   void _generateGrid({bool isHardRefresh = false}) =>
